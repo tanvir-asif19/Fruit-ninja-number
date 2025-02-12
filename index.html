@@ -158,7 +158,9 @@
 
         submitButton.on("pointerdown", () => {
           alert("Your number is: " + phoneInput.value);
-          numberDisplay.textContent = "Enter numbers as you play...";
+          // Hide the game popup after submitting the number
+          gamePopup.style.display = "none";
+          numberDisplay.textContent = "Enter numbers as you play..."; // Clear the displayed number
         });
       }
 
