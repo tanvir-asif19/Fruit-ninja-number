@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hexagonal Fruit Number Input</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(40deg, #ff9a9e, #faf9c4, #c4fad4);
+        font-family: Arial, sans-serif;
+      }
+      .glassmorphism {
+        background: rgba(255, 255, 255, 0.103);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+      }
+      #phoneInput {
+        font-size: 24px;
+        width: 250px;
+        padding: 10px;
+        text-align: center;
+        border: none;
+        border-radius: 10px;
+        outline: none;
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+      }
+      #gamePopup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        height: 600px;
+        background: linear-gradient(135deg, #f0f0f0, #e6e6e6);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(15px);
+        padding: 10px;
+        text-align: center;
+      }
+      #closeGame {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: red;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      canvas {
+        background: whitesmoke;
+      }
+      #numberDisplay {
+        font-size: 30px;
+        font-weight: bold;
+        color: #333;
+        margin-top: 20px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+  </head>
+  <body>
+    <div class="glassmorphism">
+      <h2>Input Number</h2>
+      <input
+        type="text"
+        id="phoneInput"
+        placeholder="Input your Number"
+        readonly
+      />
+      <!-- <div id="numberDisplay">Enter numbers as you play...</div> -->
+    </div>
+
+    <div id="gamePopup">
+      <button id="closeGame">X</button>
+    </div>
+
+    <script>
+      const phoneInput = document.getElementById("phoneInput");
+      const gamePopup = document.getElementById("gamePopup");
+      const closeGame = document.getElementById("closeGame");
+      const numberDisplay = document.getElementById("numberDisplay");
+
+      phoneInput.addEventListener(
+        "focus",
+        () => (gamePopup.style.display = "block")
+      );
+      closeGame.addEventListener(
+        "click",
+        () => (gamePopup.style.display = "none")
+      );
+
+      const config = {
+        type: Phaser.AUTO,
+        width: 380,
+        height: 550,
+        parent: "gamePopup",
+        scene: { preload, create, update },
+        physics: {
+          default: "arcade",
+          arcade: { gravity: { y: 40 }, debug: false },
+        }, // Slower falling speed
+      };
+
+      let game = new Phaser.Game(config);
+      let fruitSound, bombSound;
+      const hexColors = [
+        "#2C3E50", // Dark Blue
+        "#34495E", // Charcoal
+        "#1ABC9C", // Teal
+        "#16A085", // Dark Teal
+        "#8E44AD", // Dark Purple
+        "#9B59B6", // Purple
+        "#2ECC71", // Dark Green
+        "#27AE60", // Forest Green
+        "#2980B9", // Dark Sky Blue
+        "#D35400", // Dark Orange
+      ];
+
+      function preload() {
+        this.load.audio("fruitSound", "fruit.mp3");
+        this.load.audio("bombSound", "bomb.mp3");
+      }
+
+      function create() {
+        fruitSound = this.sound.add("fruitSound");
+        bombSound = this.sound.add("bombSound");
+
+        this.fruits = this.physics.add.group();
+        this.bombs = this.physics.add.group();
+
+        this.time.addEvent({
+          delay: 1000,
+          callback: spawnObjects,
+          callbackScope: this,
+          loop: true,
+        });
+
+        let submitButton = this.add
+          .rectangle(190, 500, 120, 50, 0x3498db, 1)
+          .setInteractive();
+        let submitText = this.add.text(160, 485, "Submit", {
+          fontSize: "24px",
+          color: "#ffffff",
+          fontStyle: "bold",
+        });
+
+        submitButton.on("pointerdown", () => {
+          alert("Your number is: " + phoneInput.value);
+          numberDisplay.textContent = "Enter numbers as you play...";
+        });
+      }
+
+      function spawnObjects() {
+        let count = Phaser.Math.Between(2, 3);
+        for (let i = 0; i < count; i++) {
+          spawnObject.call(this);
+        }
+      }
+
+      function spawnObject() {
+        let x = Phaser.Math.Between(50, 330);
+        let isBomb = Phaser.Math.Between(1, 6) === 6; // 16% chance for a bomb
+        let obj, graphics, text;
+
+        if (isBomb) {
+          graphics = this.add.graphics();
+          graphics.fillStyle(0xff0000, 1);
+          graphics.fillCircle(25, 25, 25); // Circular bomb
+          obj = this.add.container(x, 0, [graphics]);
+
+          text = this.add.text(12, 5, "X", {
+            fontSize: "32px",
+            color: "#ffffff",
+            fontStyle: "bold",
+          });
+          obj.add(text);
+
+          this.physics.world.enable(obj);
+          this.bombs.add(obj);
+          obj.setData("type", "bomb");
+        } else {
+          let number = Phaser.Math.Between(0, 9);
+          let color = hexColors[number];
+
+          graphics = this.add.graphics();
+          drawHexagon(graphics, 25, 25, 25, color);
+          obj = this.add.container(x, 0, [graphics]);
+
+          text = this.add.text(16, 8, number, {
+            fontSize: "32px",
+            color: "#ffffff",
+            fontStyle: "bold",
+          });
+          obj.add(text);
+
+          this.physics.world.enable(obj);
+          this.fruits.add(obj);
+          obj.setData("type", "number");
+          obj.setData("value", number);
+        }
+
+        obj.body.setVelocity(0, 50); // Even slower falling speed
+        obj.setSize(50, 50);
+        obj.setInteractive();
+        obj.on("pointerdown", () => handleTap(obj), this);
+      }
+
+      function handleTap(obj) {
+        if (obj.getData("type") === "number") {
+          phoneInput.value += obj.getData("value");
+          fruitSound.play();
+          numberDisplay.textContent = "Entered number: " + phoneInput.value; // Show entered number while playing
+        } else {
+          phoneInput.value = "";
+          bombSound.play();
+          numberDisplay.textContent = "Enter numbers as you play..."; // Reset displayed number when bomb is hit
+        }
+        obj.destroy();
+      }
+
+      function update() {
+        this.fruits.children.iterate((fruit) => {
+          if (fruit && fruit.y > 550) fruit.destroy();
+        });
+        this.bombs.children.iterate((bomb) => {
+          if (bomb && bomb.y > 550) bomb.destroy();
+        });
+      }
+
+      function drawHexagon(graphics, x, y, size, color) {
+        const angle = Math.PI / 3;
+        graphics.fillStyle(
+          Phaser.Display.Color.HexStringToColor(color).color,
+          1
+        );
+        graphics.beginPath();
+        for (let i = 0; i < 6; i++) {
+          let px = x + size * Math.cos(i * angle);
+          let py = y + size * Math.sin(i * angle);
+          if (i === 0) graphics.moveTo(px, py);
+          else graphics.lineTo(px, py);
+        }
+        graphics.closePath();
+        graphics.fillPath();
+      }
+    </script>
+  </body>
+</html>
