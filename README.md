@@ -1,10 +1,10 @@
-#Hexagonal Fruit Number Input Field
+# Hexagonal Fruit Number Input Field
 
-###Overview:
+### Overview:
 
 This is an interactive gamified input field where users can input their phone number by tapping on falling number-shaped fruits in a fun and colorful way. The game-like experience includes numbers falling in hexagonal shapes and bombs that clear the input if tapped. The game uses the Phaser.js library to handle the falling objects, with a modern Glass-morphism design and candy color gradient background.
 
-###Features:
+### Features:
 
 - Interactive number input using falling number-shaped fruits (0-9).
 
@@ -18,7 +18,7 @@ This is an interactive gamified input field where users can input their phone nu
 
 - Game screen only appears when the input field is activated.
 
-###Installation:
+### Installation:
 
 1\. Clone this repository:
 
@@ -28,7 +28,7 @@ git clone https://github.com/tanvir-asif19/Fruit-ninja-number.git
 
 That's it! The gamified input field will work in your browser.
 
-###How It Works:
+### How It Works:
 
 1\. Number Input:
 
@@ -46,7 +46,7 @@ After entering the phone number, you can click the "Submit" button to see an ale
 
 The game screen (with the falling fruits) appears as a pop-up when the input field is clicked.
 
-###Technologies Used:
+### Technologies Used:
 
 - Phaser.js: A fast, robust, and versatile 2D game framework used for handling the falling objects and interactions.
 
@@ -54,11 +54,11 @@ The game screen (with the falling fruits) appears as a pop-up when the input fie
 
 - JavaScript: Handles the logic of falling numbers, bombs, and user input interactions.
 
-###Color Palette:
+### Color Palette:
 
 The falling fruits and bombs have darker color shades that contrast well with white, making the numbers easy to read.
 
-#####Here are the colors used for the number fruits:
+##### Colors used for the number fruits:
 
 - Dark Blue: #2C3E50
 
@@ -80,7 +80,7 @@ The falling fruits and bombs have darker color shades that contrast well with wh
 
 - Dark Orange: #D35400
 
-###License:
+### License:
 
 This project is open-source and available under the MIT License.
 
